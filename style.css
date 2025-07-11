@@ -738,21 +738,14 @@ body::before {
 }
 
 .product-card .product-description {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.7);
-  color: var(--white);
-  padding: 10px;
+  position: static;
+  margin-top: 10px;
   font-size: 14px;
+  color: var(--neutral-medium);
   line-height: 1.5;
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
-}
-
-.product-card:hover .product-description {
-  transform: translateY(0);
+  background: none;
+  transform: none;
+  transition: none;
 }
 
 /* selected products */
