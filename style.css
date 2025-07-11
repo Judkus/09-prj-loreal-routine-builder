@@ -561,9 +561,9 @@ body::before {
 }
 
 .product-card.selected {
-  background: linear-gradient(135deg, rgba(255, 0, 59, 0.08) 0%, rgba(227, 165, 53, 0.08) 100%) padding-box,
-              linear-gradient(135deg, var(--loreal-red) 0%, var(--loreal-gold) 100%) border-box;
-  box-shadow: 0 8px 35px var(--shadow-red);
+  border: 3px solid var(--loreal-red);
+  background: linear-gradient(135deg, rgba(255, 0, 59, 0.05) 0%, rgba(227, 165, 53, 0.05) 100%);
+  box-shadow: 0 8px 25px rgba(255, 0, 59, 0.2);
   transform: translateY(-4px);
 }
 
