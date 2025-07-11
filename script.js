@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", function () {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${YOUR_API_KEY}`,
+            Authorization: `Bearer YOUR_API_KEY`,
           },
           body: JSON.stringify({
             model: "gpt-4o",
