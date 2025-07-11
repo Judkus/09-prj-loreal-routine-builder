@@ -42,7 +42,7 @@ function displayProducts(products) {
   `
     )
     .join("");
-    
+
   // Update the visual state of all product cards
   updateProductCardStates();
 }
@@ -72,21 +72,23 @@ chatForm.addEventListener("submit", (e) => {
 async function toggleProductSelection(productId) {
   // Convert productId to number to match the JSON data format
   const numericProductId = parseInt(productId);
-  
+
   // Load all products to get the full product data
   const allProducts = await loadProducts();
-  
-  // find() method searches through the array and returns the first product 
+
+  // find() method searches through the array and returns the first product
   // where the id matches the productId we're looking for
-  const product = allProducts.find(p => p.id === numericProductId);
-  
+  const product = allProducts.find((p) => p.id === numericProductId);
+
   // If no product is found, exit the function early
   if (!product) return;
-  
+
   // findIndex() returns the position of the product in our selectedProducts array
   // If the product isn't found, it returns -1
-  const existingIndex = selectedProducts.findIndex(p => p.id === numericProductId);
-  
+  const existingIndex = selectedProducts.findIndex(
+    (p) => p.id === numericProductId
+  );
+
   if (existingIndex > -1) {
     // Product is already selected, so remove it using splice()
     // splice() removes 1 item starting at the existingIndex position
@@ -95,10 +97,10 @@ async function toggleProductSelection(productId) {
     // Product is not selected, so add it to the array using push()
     selectedProducts.push(product);
   }
-  
+
   // Update the display of selected products
   updateSelectedProductsDisplay();
-  
+
   // Update the visual state of product cards
   updateProductCardStates();
 }
@@ -106,23 +108,23 @@ async function toggleProductSelection(productId) {
 /* Update the visual state of product cards to show which are selected */
 function updateProductCardStates() {
   // querySelectorAll() gets all elements with the class 'product-card'
-  const productCards = document.querySelectorAll('.product-card');
-  
+  const productCards = document.querySelectorAll(".product-card");
+
   // forEach() loops through each product card
-  productCards.forEach(card => {
+  productCards.forEach((card) => {
     // getAttribute() gets the value of the data-product-id attribute
-    const productId = parseInt(card.getAttribute('data-product-id'));
-    
+    const productId = parseInt(card.getAttribute("data-product-id"));
+
     // some() checks if any product in selectedProducts has this id
     // It returns true if found, false if not found
-    const isSelected = selectedProducts.some(p => p.id === productId);
-    
+    const isSelected = selectedProducts.some((p) => p.id === productId);
+
     if (isSelected) {
       // addClass() adds the 'selected' CSS class to make it look selected
-      card.classList.add('selected');
+      card.classList.add("selected");
     } else {
       // removeClass() removes the 'selected' CSS class
-      card.classList.remove('selected');
+      card.classList.remove("selected");
     }
   });
 }
@@ -143,15 +145,17 @@ function updateSelectedProductsDisplay() {
     // map() creates a new array by transforming each selected product into HTML
     // join('') combines all the HTML strings into one string
     selectedProductsList.innerHTML = selectedProducts
-      .map(product => `
+      .map(
+        (product) => `
         <div class="selected-product-tag">
           <span>${product.name}</span>
           <button class="remove-btn" onclick="removeProduct('${product.id}')" title="Remove product">
             <i class="fa-solid fa-times"></i>
           </button>
         </div>
-      `)
-      .join('');
+      `
+      )
+      .join("");
     // Enable the generate routine button when products are selected
     generateRoutineBtn.disabled = false;
   }
@@ -161,26 +165,26 @@ function updateSelectedProductsDisplay() {
 function removeProduct(productId) {
   // Convert to number to match the data format
   const numericProductId = parseInt(productId);
-  
+
   // filter() creates a new array containing only products that DON'T match the productId
   // This effectively removes the product we want to delete
-  selectedProducts = selectedProducts.filter(p => p.id !== numericProductId);
-  
+  selectedProducts = selectedProducts.filter((p) => p.id !== numericProductId);
+
   // Update the displays to reflect the change
   updateSelectedProductsDisplay();
   updateProductCardStates();
 }
 
 /* Initialize the app when the page loads */
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
   // Set up initial state
   updateSelectedProductsDisplay();
-  
+
   // Add event listener for the generate routine button
-  generateRoutineBtn.addEventListener('click', function() {
+  generateRoutineBtn.addEventListener("click", function () {
     if (selectedProducts.length > 0) {
       // Show selected products in chat window
-      const productNames = selectedProducts.map(p => p.name).join(', ');
+      const productNames = selectedProducts.map((p) => p.name).join(", ");
       chatWindow.innerHTML = `
         <div class="assistant-message">
           Great! I see you've selected: ${productNames}. 
