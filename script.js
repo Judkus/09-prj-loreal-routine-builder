@@ -183,12 +183,18 @@ document.addEventListener("DOMContentLoaded", function () {
   // Add event listener for the generate routine button
   generateRoutineBtn.addEventListener("click", function () {
     if (selectedProducts.length > 0) {
-      // Show selected products in chat window
+      // Collect and display selected products in chat window
       const productNames = selectedProducts.map((p) => p.name).join(", ");
       chatWindow.innerHTML = `
         <div class="assistant-message">
           Great! I see you've selected: ${productNames}. 
           I'm ready to help you create a personalized routine with these products!
+        </div>
+      `;
+    } else {
+      chatWindow.innerHTML = `
+        <div class="assistant-message">
+          Please select some products to generate a routine.
         </div>
       `;
     }
