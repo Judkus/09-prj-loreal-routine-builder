@@ -36,6 +36,7 @@ function displayProducts(products) {
       <div class="product-info">
         <h3>${product.name}</h3>
         <p>${product.brand}</p>
+        <p class="product-description">${product.description}</p>
       </div>
     </div>
   `
