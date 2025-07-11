@@ -224,9 +224,11 @@ body {
 }
 
 .product-card.selected {
-  border-color: var(--loreal-gold);
+  border: 3px solid var(--loreal-gold);
   background-color: var(--loreal-gold);
   color: white;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
 }
 
 .product-card img {
