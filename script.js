@@ -181,16 +181,49 @@ document.addEventListener("DOMContentLoaded", function () {
   updateSelectedProductsDisplay();
 
   // Add event listener for the generate routine button
-  generateRoutineBtn.addEventListener("click", function () {
+  generateRoutineBtn.addEventListener("click", async function () {
+    console.log("Generate Routine button clicked.");
+    console.log("Selected Products:", selectedProducts);
+
     if (selectedProducts.length > 0) {
-      // Collect and display selected products in chat window
-      const productNames = selectedProducts.map((p) => p.name).join(", ");
-      chatWindow.innerHTML = `
-        <div class="assistant-message">
-          Great! I see you've selected: ${productNames}. 
-          I'm ready to help you create a personalized routine with these products!
-        </div>
-      `;
+      const productData = selectedProducts.map((p) => ({
+        name: p.name,
+        brand: p.brand,
+        category: p.category,
+        description: p.description,
+      }));
+
+      try {
+        const response = await fetch("https://api.openai.com/v1/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${YOUR_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4o",
+            prompt: `Generate a personalized routine using these products: ${JSON.stringify(
+              productData
+            )}`,
+            max_tokens: 150,
+          }),
+        });
+
+        const data = await response.json();
+
+        chatWindow.innerHTML = `
+          <div class="assistant-message">
+            ${data.choices[0].text}
+          </div>
+        `;
+      } catch (error) {
+        console.error("Error generating routine:", error);
+        chatWindow.innerHTML = `
+          <div class="assistant-message">
+            Sorry, there was an error generating your routine. Please try again later.
+          </div>
+        `;
+      }
     } else {
       chatWindow.innerHTML = `
         <div class="assistant-message">
