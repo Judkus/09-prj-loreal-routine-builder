@@ -31,19 +31,24 @@ function displayProducts(products) {
   productsContainer.innerHTML = products
     .map(
       (product) => `
-    <div class="product-card" data-product-id="${product.id}" onclick="toggleProductSelection('${product.id}')">
+    <div class="product-card" data-product-id="${product.id}">
       <img src="${product.image}" alt="${product.name}">
       <div class="product-info">
         <h3>${product.name}</h3>
         <p>${product.brand}</p>
         <p class="product-description">${product.description}</p>
       </div>
+      <div class="hover-overlay">
+        <p>${product.description}</p>
+        <button onclick="toggleProductSelection('${product.id}')">
+          ${selectedProducts.some((p) => p.id === product.id) ? "Unselect" : "Select"}
+        </button>
+      </div>
     </div>
   `
     )
     .join("");
 
-  // Update the visual state of all product cards
   updateProductCardStates();
 }
 
