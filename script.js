@@ -41,7 +41,11 @@ function displayProducts(products) {
       <div class="hover-overlay">
         <p>${product.description}</p>
         <button onclick="toggleProductSelection('${product.id}')">
-          ${selectedProducts.some((p) => p.id === product.id) ? "Unselect" : "Select"}
+          ${
+            selectedProducts.some((p) => p.id === product.id)
+              ? "Unselect"
+              : "Select"
+          }
         </button>
       </div>
     </div>
