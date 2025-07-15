@@ -180,6 +180,15 @@ generateRoutineButton.addEventListener("click", async () => {
   }
 
   try {
+    const formattedProducts = selectedProducts
+      .map(
+        (product, index) =>
+          `Step ${index + 1}: ${product.name} (${product.brand}) - ${
+            product.description
+          }`
+      )
+      .join("\n");
+
     const response = await fetch(workerUrl, {
       method: "POST",
       headers: {
@@ -187,28 +196,21 @@ generateRoutineButton.addEventListener("click", async () => {
       },
       body: JSON.stringify({
         model: "gpt-4o",
-        prompt: `Generate a skincare routine using the following products:\n${selectedProducts
-          .map(
-            (product, index) =>
-              `Step ${index + 1}: ${product.name} (${product.brand}) - ${
-                product.description
-              }`
-          )
-          .join("\n")}`,
+        prompt: `Generate a skincare routine using the following products:\n${formattedProducts}`,
         max_tokens: 150,
       }),
     });
 
     const data = await response.json();
 
-    if (data.choices && data.choices.length > 0) {
+    if (data.choices && data.choices.length > 0 && data.choices[0].text) {
       const selectedProductsList = document.getElementById(
         "selectedProductsList"
       );
       selectedProductsList.innerHTML = `
         <div class="routine">
           <h3>Your Personalized Routine</h3>
-          <pre>${data.choices[0].text}</pre>
+          <pre>${data.choices[0].text.trim()}</pre>
         </div>
       `;
     } else {
