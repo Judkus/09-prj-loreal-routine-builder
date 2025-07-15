@@ -147,3 +147,31 @@ chatForm.addEventListener("submit", (e) => {
 
   chatWindow.innerHTML = "Connect to the OpenAI API for a response!";
 });
+
+/* Generate a personalized routine based on selected products */
+const generateRoutineButton = document.getElementById("generateRoutine");
+
+generateRoutineButton.addEventListener("click", () => {
+  const selectedProductsList = document.getElementById("selectedProductsList");
+
+  if (selectedProducts.length === 0) {
+    alert(
+      "No products selected. Please select products to generate a routine."
+    );
+    return;
+  }
+
+  const routineMessage = selectedProducts
+    .map(
+      (product, index) =>
+        `Step ${index + 1}: Use ${product.name} by ${product.brand}`
+    )
+    .join("\n");
+
+  selectedProductsList.innerHTML = `
+    <div class="routine">
+      <h3>Your Personalized Routine</h3>
+      <pre>${routineMessage}</pre>
+    </div>
+  `;
+});
