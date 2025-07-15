@@ -1,5 +1,6 @@
 const workerUrl = "https://project9lorealroutine.kussuejh.workers.dev";
 //* Get references to DOM elements */
+
 const categoryFilter = document.getElementById("categoryFilter");
 const productsContainer = document.getElementById("productsContainer");
 const chatForm = document.getElementById("chatForm");
@@ -148,12 +149,10 @@ chatForm.addEventListener("submit", (e) => {
   chatWindow.innerHTML = "Connect to the OpenAI API for a response!";
 });
 
-/* Generate a personalized routine based on selected products */
+/* Generate a personalized routine using OpenAI API */
 const generateRoutineButton = document.getElementById("generateRoutine");
 
-generateRoutineButton.addEventListener("click", () => {
-  const selectedProductsList = document.getElementById("selectedProductsList");
-
+generateRoutineButton.addEventListener("click", async () => {
   if (selectedProducts.length === 0) {
     alert(
       "No products selected. Please select products to generate a routine."
@@ -161,17 +160,43 @@ generateRoutineButton.addEventListener("click", () => {
     return;
   }
 
-  const routineMessage = selectedProducts
-    .map(
-      (product, index) =>
-        `Step ${index + 1}: Use ${product.name} by ${product.brand}`
-    )
-    .join("\n");
+  try {
+    const response = await fetch(workerUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        prompt: `Generate a skincare routine using the following products:\n${selectedProducts
+          .map(
+            (product, index) =>
+              `Step ${index + 1}: ${product.name} (${product.brand}) - ${
+                product.description
+              }`
+          )
+          .join("\n")}`,
+        max_tokens: 150,
+      }),
+    });
 
-  selectedProductsList.innerHTML = `
-    <div class="routine">
-      <h3>Your Personalized Routine</h3>
-      <pre>${routineMessage}</pre>
-    </div>
-  `;
+    const data = await response.json();
+
+    if (data.choices && data.choices.length > 0) {
+      const selectedProductsList = document.getElementById(
+        "selectedProductsList"
+      );
+      selectedProductsList.innerHTML = `
+        <div class="routine">
+          <h3>Your Personalized Routine</h3>
+          <pre>${data.choices[0].text}</pre>
+        </div>
+      `;
+    } else {
+      alert("Failed to generate routine. No valid response from the API.");
+    }
+  } catch (error) {
+    alert("Failed to generate routine. Please try again later.");
+    console.error(error);
+  }
 });
