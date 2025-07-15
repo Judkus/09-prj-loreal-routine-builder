@@ -92,6 +92,8 @@ function toggleProductSelection(productId) {
         id: productId,
         name: selectedProduct.querySelector("h3").textContent,
         brand: selectedProduct.querySelector("p").textContent,
+        description: selectedProduct.querySelector(".product-description")
+          .textContent, // Fixed description retrieval
       };
       products.push(productDetails);
     }
@@ -189,6 +191,8 @@ generateRoutineButton.addEventListener("click", async () => {
       )
       .join("\n");
 
+    console.log("Formatted Products:", formattedProducts); // Debugging log
+
     const response = await fetch(workerUrl, {
       method: "POST",
       headers: {
@@ -201,7 +205,11 @@ generateRoutineButton.addEventListener("click", async () => {
       }),
     });
 
+    console.log("API Response:", response); // Debugging log
+
     const data = await response.json();
+
+    console.log("Parsed Response Data:", data); // Debugging log
 
     if (data.choices && data.choices.length > 0 && data.choices[0].text) {
       const selectedProductsList = document.getElementById(
@@ -214,10 +222,11 @@ generateRoutineButton.addEventListener("click", async () => {
         </div>
       `;
     } else {
+      console.error("Invalid API Response Data:", data); // Log invalid response
       alert("Failed to generate routine. No valid response from the API.");
     }
   } catch (error) {
     alert("Failed to generate routine. Please try again later.");
-    console.error(error);
+    console.error("Error Details:", error); // Debugging log
   }
 });
