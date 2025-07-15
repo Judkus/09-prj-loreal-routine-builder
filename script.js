@@ -124,7 +124,26 @@ function removeProductFromList(productId) {
 
   if (productIndex > -1) {
     selectedProducts.splice(productIndex, 1);
-    toggleProductSelection(productId); // Update the product card state and DOM
+
+    // Update the selected products list in the DOM
+    const selectedProductsList = document.getElementById(
+      "selectedProductsList"
+    );
+    selectedProductsList.innerHTML = selectedProducts.length
+      ? selectedProducts
+          .map(
+            (product) => `
+            <div class="selected-product">
+              <h3>${product.name}</h3>
+              <p>${product.brand}</p>
+              <button onclick="removeProductFromList('${product.id}')">Remove</button>
+            </div>
+          `
+          )
+          .join("")
+      : "<p>No products selected</p>";
+
+    updateProductCardStates();
   }
 }
 
