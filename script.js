@@ -1,8 +1,12 @@
-/* Get references to DOM elements */
+const workerUrl = "https://project9lorealroutine.kussuejh.workers.dev";
+//* Get references to DOM elements */
 const categoryFilter = document.getElementById("categoryFilter");
 const productsContainer = document.getElementById("productsContainer");
 const chatForm = document.getElementById("chatForm");
 const chatWindow = document.getElementById("chatWindow");
+
+/* Array to store selected products */
+let selectedProducts = [];
 
 /* Show initial placeholder until user selects a category */
 productsContainer.innerHTML = `
@@ -46,6 +50,81 @@ function displayProducts(products) {
     .join("");
 
   updateProductCardStates();
+}
+
+/* Update the states of product cards based on selection */
+function updateProductCardStates() {
+  const productCards = document.querySelectorAll(".product-card");
+
+  productCards.forEach((card) => {
+    const productId = card.getAttribute("data-product-id");
+
+    if (selectedProducts.some((product) => product.id === productId)) {
+      card.classList.add("selected");
+    } else {
+      card.classList.remove("selected");
+    }
+  });
+}
+
+/* Toggle product selection and update the selected products list */
+function toggleProductSelection(productId) {
+  const products = selectedProducts;
+
+  // Check if the product is already selected
+  const productIndex = products.findIndex(
+    (product) => product.id === productId
+  );
+
+  if (productIndex > -1) {
+    // Remove product if already selected
+    products.splice(productIndex, 1);
+  } else {
+    // Add product to selectedProducts
+    const allProducts = document.querySelectorAll(".product-card");
+    const selectedProduct = Array.from(allProducts).find(
+      (card) => card.getAttribute("data-product-id") === productId
+    );
+
+    if (selectedProduct) {
+      const productDetails = {
+        id: productId,
+        name: selectedProduct.querySelector("h3").textContent,
+        brand: selectedProduct.querySelector("p").textContent,
+      };
+      products.push(productDetails);
+    }
+  }
+
+  // Update the selected products list in the DOM
+  const selectedProductsList = document.getElementById("selectedProductsList");
+  selectedProductsList.innerHTML = products.length
+    ? products
+        .map(
+          (product) => `
+          <div class="selected-product">
+            <h3>${product.name}</h3>
+            <p>${product.brand}</p>
+            <button onclick="removeProductFromList('${product.id}')">Remove</button>
+          </div>
+        `
+        )
+        .join("")
+    : "<p>No products selected</p>";
+
+  updateProductCardStates();
+}
+
+/* Remove product from the "Selected Products" list */
+function removeProductFromList(productId) {
+  const productIndex = selectedProducts.findIndex(
+    (product) => product.id === productId
+  );
+
+  if (productIndex > -1) {
+    selectedProducts.splice(productIndex, 1);
+    toggleProductSelection(productId); // Update the product card state and DOM
+  }
 }
 
 /* Filter and display products when category changes */
