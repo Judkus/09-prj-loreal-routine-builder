@@ -39,6 +39,10 @@ body {
   text-align: center;
   padding: 2rem;
   border-bottom: 4px solid var(--neutral-dark);
+  position: sticky;
+  top: 0;
+  background-color: var(--secondary-color);
+  z-index: 1000;
 }
 
 .logo {
@@ -162,6 +166,23 @@ h3 {
   .filter-container,
   .search-container {
     min-width: 100%;
+  }
+
+  .page-wrapper {
+    padding: 10px;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  .carousel-item {
+    flex: 0 0 80%;
+    margin: 0 auto;
+  }
+
+  .chatbox {
+    padding: 10px;
   }
 }
 
@@ -356,6 +377,9 @@ h3 {
   text-align: center;
   font-size: 14px;
   color: #666;
+  position: sticky;
+  bottom: 0;
+  background-color: var(--secondary-color);
 }
 
 .site-footer nav {

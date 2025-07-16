@@ -122,6 +122,13 @@
         </button>
       </div>
 
+      <!-- Floating Action Button -->
+      <div class="floating-chat-btn">
+        <button id="openChat" title="Open Chat">
+          <i class="fa-solid fa-comments"></i>
+        </button>
+      </div>
+
       <!------- Footer Links ------->
       <footer class="site-footer">
         <p>&copy; 2025 L'Oréal. All rights reserved.</p>
@@ -161,6 +168,13 @@
         }
         carousel.scrollTo({ left: scrollAmount, behavior: "smooth" });
       }, 3000);
+
+      // Floating chat button functionality
+      const openChatButton = document.getElementById("openChat");
+      openChatButton.addEventListener("click", () => {
+        const chatbox = document.querySelector(".chatbox");
+        chatbox.scrollIntoView({ behavior: "smooth" });
+      });
     </script>
   </body>
 </html>
