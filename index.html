@@ -96,6 +96,13 @@
         </form>
       </section>
 
+      <!-- Add RTL toggle button -->
+      <div class="rtl-toggle">
+        <button id="toggleRTL" title="Switch text direction">
+          Switch to RTL
+        </button>
+      </div>
+
       <!------- Footer Links ------->
       <footer class="site-footer">
         <p>&copy; 2025 L'Oréal. All rights reserved.</p>
@@ -111,5 +118,19 @@
     <!-- secrets.js can be removed when using Cloudflare Workers for API requests -->
     <script src="secrets.js"></script>
     <script src="script.js"></script>
+    <script>
+      // Add script to toggle RTL layout
+      const toggleRTLButton = document.getElementById("toggleRTL");
+      toggleRTLButton.addEventListener("click", () => {
+        const htmlElement = document.documentElement;
+        if (htmlElement.getAttribute("dir") === "rtl") {
+          htmlElement.setAttribute("dir", "ltr");
+          toggleRTLButton.textContent = "Switch to RTL";
+        } else {
+          htmlElement.setAttribute("dir", "rtl");
+          toggleRTLButton.textContent = "Switch to LTR";
+        }
+      });
+    </script>
   </body>
 </html>

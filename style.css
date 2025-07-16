@@ -532,3 +532,37 @@ body {
   white-space: nowrap;
   border: 0;
 }
+
+/* Add support for RTL layout */
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+/* Adjust text alignment for RTL */
+html[dir="rtl"] body {
+  text-align: right;
+}
+
+/* Mirror product grid layout */
+html[dir="rtl"] .products-grid {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+/* Adjust selected products section */
+html[dir="rtl"] .selected-products {
+  text-align: right;
+}
+
+/* Adjust chat interface */
+html[dir="rtl"] .chatbox {
+  text-align: right;
+}
+
+html[dir="rtl"] .chat-window {
+  direction: rtl;
+}
+
+html[dir="rtl"] .chat-form {
+  flex-direction: row-reverse;
+}
