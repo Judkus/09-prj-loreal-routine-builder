@@ -25,10 +25,6 @@ body {
   display: flex;
   justify-content: center;
   background-color: var(--secondary-color);
-  background-image: url("img/background.jpg");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
 }
 
 .page-wrapper {
@@ -657,12 +653,4 @@ html[dir="rtl"] .chat-form {
 }
 .feedback-form button {
   margin-top: 10px;
-}
-
-/* Add subtle shadow to text for readability */
-h1,
-h2,
-h3,
-p {
-  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
 }
