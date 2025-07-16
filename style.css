@@ -25,6 +25,11 @@ body {
   display: flex;
   justify-content: center;
   background-color: var(--secondary-color);
+  background-image: url('img/loreal-pict.jpeg'), url('img/background2.jpg');
+  background-size: cover, contain;
+  background-position: center, bottom;
+  background-repeat: no-repeat, no-repeat;
+  background-attachment: fixed;
 }
 
 .page-wrapper {
@@ -653,4 +658,9 @@ html[dir="rtl"] .chat-form {
 }
 .feedback-form button {
   margin-top: 10px;
+}
+
+/* Add subtle shadow to text for readability */
+h1, h2, h3, p {
+  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
 }
