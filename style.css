@@ -91,6 +91,59 @@ body {
   overflow-y: auto;
   background: #fafafa;
   margin-bottom: 20px;
+  word-wrap: break-word; /* Break long words to prevent overflow */
+  overflow-wrap: break-word; /* Modern browsers alternative */
+  white-space: pre-wrap; /* Preserve whitespace and wrap text */
+}
+
+/* Message styling for better readability */
+.chat-window .user-message,
+.chat-window .assistant-message {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.chat-window .user-message {
+  background-color: #e3f2fd;
+  border-left: 4px solid var(--loreal-red);
+}
+
+.chat-window .assistant-message {
+  background-color: #f3e5f5;
+  border-left: 4px solid var(--loreal-gold);
+}
+
+/* Routine message styling */
+.chat-window .routine {
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fff3e0;
+  border: 2px solid var(--loreal-gold);
+}
+
+.chat-window .routine h3 {
+  color: var(--loreal-red);
+  margin-bottom: 10px;
+}
+
+.chat-window .routine pre {
+  white-space: pre-wrap; /* Preserve formatting but wrap text */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-family: inherit; /* Use the same font as the rest of the chat */
+  font-size: inherit;
+  margin: 0;
+}
+
+.chat-window .error {
+  background-color: #ffebee;
+  border-left: 4px solid #f44336;
+  color: #c62828;
 }
 
 /* placeholder message */
