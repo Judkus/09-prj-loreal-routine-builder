@@ -25,6 +25,10 @@ body {
   display: flex;
   justify-content: center;
   background-color: var(--secondary-color);
+  background-image: url("img/background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 .page-wrapper {
@@ -155,6 +159,14 @@ h2,
 h3 {
   font-family: "Montserrat", sans-serif;
   font-weight: 700;
+}
+
+/* Focus Indicators */
+button:focus,
+input:focus,
+textarea:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 /* Responsive design for smaller screens */
@@ -611,7 +623,8 @@ html[dir="rtl"] .chat-form {
   color: #fff;
   padding: 5px 10px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 1rem;
+  font-weight: bold;
   margin: 5px;
 }
 
@@ -644,4 +657,12 @@ html[dir="rtl"] .chat-form {
 }
 .feedback-form button {
   margin-top: 10px;
+}
+
+/* Add subtle shadow to text for readability */
+h1,
+h2,
+h3,
+p {
+  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
 }

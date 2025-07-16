@@ -130,30 +130,64 @@
       </div>
 
       <!-- User Engagement Features -->
-      <div class="user-engagement">
+      <div
+        class="user-engagement"
+        role="region"
+        aria-label="User Engagement Features"
+      >
         <!-- Badges -->
-        <div class="badges">
-          <span class="badge">New User</span>
-          <span class="badge">Routine Builder Pro</span>
+        <div class="badges" role="list" aria-label="User Badges">
+          <span class="badge" role="listitem">New User</span>
+          <span class="badge" role="listitem">Routine Builder Pro</span>
         </div>
 
         <!-- Rating System -->
-        <div class="rating-system">
+        <div class="rating-system" role="region" aria-label="Rating System">
           <h3>Rate Your Experience</h3>
-          <div class="rating-stars">
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i>
+          <div class="rating-stars" role="radiogroup" aria-label="Rating Stars">
+            <i
+              class="fa-solid fa-star"
+              role="radio"
+              aria-checked="false"
+              tabindex="0"
+            ></i>
+            <i
+              class="fa-solid fa-star"
+              role="radio"
+              aria-checked="false"
+              tabindex="0"
+            ></i>
+            <i
+              class="fa-solid fa-star"
+              role="radio"
+              aria-checked="false"
+              tabindex="0"
+            ></i>
+            <i
+              class="fa-solid fa-star"
+              role="radio"
+              aria-checked="false"
+              tabindex="0"
+            ></i>
+            <i
+              class="fa-solid fa-star"
+              role="radio"
+              aria-checked="false"
+              tabindex="0"
+            ></i>
           </div>
         </div>
 
         <!-- Feedback Form -->
-        <div class="feedback-form">
+        <div class="feedback-form" role="form" aria-label="Feedback Form">
           <h3>We Value Your Feedback</h3>
-          <textarea placeholder="Share your thoughts..."></textarea>
-          <button type="button">Submit Feedback</button>
+          <textarea
+            placeholder="Share your thoughts..."
+            aria-label="Feedback"
+          ></textarea>
+          <button type="button" aria-label="Submit Feedback">
+            Submit Feedback
+          </button>
         </div>
       </div>
 
