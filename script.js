@@ -1,4 +1,3 @@
-const workerUrl = "https://project9lorealroutine.kussuejh.workers.dev";
 //* Get references to DOM elements */
 
 const categoryFilter = document.getElementById("categoryFilter");
@@ -164,10 +163,58 @@ categoryFilter.addEventListener("change", async (e) => {
 });
 
 /* Chat form submission handler - placeholder for OpenAI integration */
-chatForm.addEventListener("submit", (e) => {
+// Handle chat form submission for follow-up questions
+chatForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+  const userInput = document.getElementById("userInput").value;
+  if (!userInput.trim()) return;
 
-  chatWindow.innerHTML = "Connect to the OpenAI API for a response!";
+  // Show user's question in the chat window
+  chatWindow.innerHTML += `<div class="user-message"><strong>You:</strong> ${userInput}</div>`;
+  document.getElementById("userInput").value = "";
+
+  // Call the OpenAI API for a follow-up answer
+  chatWindow.innerHTML += `<div class="assistant-message">Thinking...</div>`;
+  try {
+    const response = await fetch(
+      "https://lorealproject9.kussuejh.workers.dev/",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a helpful L'Oréal beauty advisor. Answer follow-up questions about routines and products.",
+            },
+            { role: "user", content: userInput },
+          ],
+          max_tokens: 100,
+        }),
+      }
+    );
+    const data = await response.json();
+    let answer = "";
+    if (
+      data.choices &&
+      data.choices[0].message &&
+      data.choices[0].message.content
+    ) {
+      answer = data.choices[0].message.content;
+    } else if (data.choices && data.choices[0].text) {
+      answer = data.choices[0].text;
+    }
+    // Remove the 'Thinking...' message
+    chatWindow.innerHTML = chatWindow.innerHTML.replace(
+      /<div class=\"assistant-message\">Thinking\.\.\.<\/div>/,
+      ""
+    );
+    chatWindow.innerHTML += `<div class="assistant-message"><strong>Advisor:</strong> ${answer}</div>`;
+  } catch (error) {
+    chatWindow.innerHTML += `<div class="assistant-message error">Sorry, I couldn't get a response. Please try again.</div>`;
+  }
 });
 
 /* Generate a personalized routine using OpenAI API */
@@ -175,7 +222,7 @@ const generateRoutineButton = document.getElementById("generateRoutine");
 
 generateRoutineButton.addEventListener("click", async () => {
   if (selectedProducts.length === 0) {
-    alert(
+    console.log(
       "No products selected. Please select products to generate a routine."
     );
     return;
@@ -193,17 +240,42 @@ generateRoutineButton.addEventListener("click", async () => {
 
     console.log("Formatted Products:", formattedProducts); // Debugging log
 
-    const response = await fetch(workerUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-4o",
-        prompt: `Generate a skincare routine using the following products:\n${formattedProducts}`,
-        max_tokens: 150,
-      }),
-    });
+    const response = await fetch(
+      "https://lorealproject9.kussuejh.workers.dev/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-4o", // Use the gpt-4o model
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a helpful L'Oréal beauty advisor. Create personalized routines based on selected products. Be specific about the order of use and explain why each product is beneficial.",
+            },
+            {
+              role: "user", // The user's message
+              content: `Generate a skincare routine using the following products:\n${formattedProducts}`,
+            },
+          ],
+          max_tokens: 150, // Limit the response length
+        }),
+      }
+    );
+
+    // const response = await fetch(workerUrl, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     model: "gpt-4o",
+    //     prompt: `Generate a skincare routine using the following products:\n${formattedProducts}`,
+    //     max_tokens: 150,
+    //   }),
+    // });
 
     console.log("API Response:", response); // Debugging log
 
@@ -211,22 +283,50 @@ generateRoutineButton.addEventListener("click", async () => {
 
     console.log("Parsed Response Data:", data); // Debugging log
 
-    if (data.choices && data.choices.length > 0 && data.choices[0].text) {
-      const selectedProductsList = document.getElementById(
-        "selectedProductsList"
-      );
-      selectedProductsList.innerHTML = `
-        <div class="routine">
-          <h3>Your Personalized Routine</h3>
-          <pre>${data.choices[0].text.trim()}</pre>
-        </div>
-      `;
-    } else {
-      console.error("Invalid API Response Data:", data); // Log invalid response
-      alert("Failed to generate routine. No valid response from the API.");
+    // Get the routine text from either data.choices[0].messages.content or data.choices[0].text
+    let routineText = "";
+    if (
+      data.choices &&
+      data.choices.length > 0 &&
+      data.choices[0].message &&
+      data.choices[0].message.content
+    ) {
+      routineText = data.choices[0].message.content;
+    } else if (
+      data.choices &&
+      data.choices.length > 0 &&
+      data.choices[0].text
+    ) {
+      routineText = data.choices[0].text;
     }
+
+    // Show the routine inside the chatWindow
+    let oldRoutine = document.getElementById("routineMessage");
+    if (oldRoutine) {
+      oldRoutine.remove();
+    }
+    if (routineText) {
+      const routineDiv = document.createElement("div");
+      routineDiv.className = "routine";
+      routineDiv.id = "routineMessage";
+      routineDiv.innerHTML = `
+        <h3>Your Personalized Routine</h3>
+        <pre>${routineText.trim()}</pre>
+        <hr style='margin:1em 0;'>
+      `;
+      chatWindow.appendChild(routineDiv);
+    } else {
+      const routineDiv = document.createElement("div");
+      routineDiv.className = "routine error";
+      routineDiv.id = "routineMessage";
+      routineDiv.textContent =
+        "Failed to generate routine. No valid response from the API.";
+      chatWindow.appendChild(routineDiv);
+    }
+    // Scroll chatWindow to bottom so user sees the latest content
+    chatWindow.scrollTop = chatWindow.scrollHeight;
   } catch (error) {
-    alert("Failed to generate routine. Please try again later.");
+    console.log("Failed to generate routine. Please try again later.");
     console.error("Error Details:", error); // Debugging log
   }
 });
