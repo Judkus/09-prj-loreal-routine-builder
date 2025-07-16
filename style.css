@@ -12,14 +12,19 @@
   --neutral-light: #f9f9f9;
   --neutral-medium: #cccccc;
   --neutral-dark: #333333;
+  --primary-color: #e60012; /* L'Oréal red */
+  --secondary-color: #f4f4f4; /* Light gray */
+  --accent-color: #000000; /* Black */
 }
 
 /* —— body + fonts —— */
 body {
-  font-family: "Montserrat", Arial, Helvetica, sans-serif;
-  color: #333;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  color: var(--accent-color);
   display: flex;
   justify-content: center;
+  background-color: var(--secondary-color);
 }
 
 .page-wrapper {
@@ -138,6 +143,14 @@ body {
 
 .search-container input:focus + .search-icon {
   color: var(--loreal-red);
+}
+
+/* Modern Typography */
+h1,
+h2,
+h3 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
 }
 
 /* Responsive design for smaller screens */
@@ -383,7 +396,7 @@ body {
 
 .product-card:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
 }
 
 .product-card.selected {
