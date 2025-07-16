@@ -1,12 +1,17 @@
 //* Get references to DOM elements */
 
 const categoryFilter = document.getElementById("categoryFilter");
+const productSearch = document.getElementById("productSearch");
+const clearSearchBtn = document.getElementById("clearSearch");
 const productsContainer = document.getElementById("productsContainer");
 const chatForm = document.getElementById("chatForm");
 const chatWindow = document.getElementById("chatWindow");
 
 /* Array to store selected products */
 let selectedProducts = [];
+
+/* Array to store all products for filtering */
+let allProducts = [];
 
 /* Load selected products from localStorage on page load */
 function loadSelectedProducts() {
@@ -57,10 +62,10 @@ function updateSelectedProductsList() {
 /* Load selected products when page loads */
 loadSelectedProducts();
 
-/* Show initial placeholder until user selects a category */
+/* Show initial placeholder until user selects a category or searches */
 productsContainer.innerHTML = `
   <div class="placeholder-message">
-    Select a category to view products
+    Select a category or search for products
   </div>
 `;
 
@@ -73,15 +78,20 @@ async function loadProducts() {
 
 /* Create HTML for displaying product cards */
 function displayProducts(products) {
+  const searchTerm = productSearch.value.toLowerCase().trim();
+
   productsContainer.innerHTML = products
     .map(
       (product) => `
     <div class="product-card" data-product-id="${product.id}">
       <img src="${product.image}" alt="${product.name}">
       <div class="product-info">
-        <h3>${product.name}</h3>
-        <p>${product.brand}</p>
-        <p class="product-description">${product.description}</p>
+        <h3>${highlightSearchTerm(product.name, searchTerm)}</h3>
+        <p>${highlightSearchTerm(product.brand, searchTerm)}</p>
+        <p class="product-description">${highlightSearchTerm(
+          product.description,
+          searchTerm
+        )}</p>
       </div>
       <div class="hover-overlay">
         <p>${product.description}</p>
@@ -99,6 +109,14 @@ function displayProducts(products) {
     .join("");
 
   updateProductCardStates();
+}
+
+/* Helper function to highlight search terms */
+function highlightSearchTerm(text, searchTerm) {
+  if (!searchTerm) return text;
+
+  const regex = new RegExp(`(${searchTerm})`, "gi");
+  return text.replace(regex, '<mark class="search-highlight">$1</mark>');
 }
 
 /* Update the states of product cards based on selection */
@@ -169,18 +187,109 @@ function removeProductFromList(productId) {
   }
 }
 
+/* Comprehensive filtering function that handles both category and search */
+async function filterAndDisplayProducts() {
+  // Load all products if not already loaded
+  if (allProducts.length === 0) {
+    allProducts = await loadProducts();
+  }
+
+  const selectedCategory = categoryFilter.value;
+  const searchTerm = productSearch.value.toLowerCase().trim();
+
+  let filteredProducts = allProducts;
+
+  // Apply category filter
+  if (selectedCategory) {
+    filteredProducts = filteredProducts.filter(
+      (product) => product.category === selectedCategory
+    );
+  }
+
+  // Apply search filter
+  if (searchTerm) {
+    filteredProducts = filteredProducts.filter((product) => {
+      const name = product.name.toLowerCase();
+      const brand = product.brand.toLowerCase();
+      const description = product.description.toLowerCase();
+      const category = product.category.toLowerCase();
+
+      // Search in name, brand, description, and category
+      return (
+        name.includes(searchTerm) ||
+        brand.includes(searchTerm) ||
+        description.includes(searchTerm) ||
+        category.includes(searchTerm)
+      );
+    });
+  }
+
+  // Show placeholder if no category is selected and no search term
+  if (!selectedCategory && !searchTerm) {
+    productsContainer.innerHTML = `
+      <div class="placeholder-message">
+        Select a category or search for products
+      </div>
+    `;
+    return;
+  }
+
+  // Show results or no results message
+  if (filteredProducts.length === 0) {
+    productsContainer.innerHTML = `
+      <div class="placeholder-message">
+        No products found matching your criteria
+      </div>
+    `;
+  } else {
+    displayProducts(filteredProducts);
+
+    // Show results count if searching
+    if (searchTerm || selectedCategory) {
+      const resultsCount = document.createElement("div");
+      resultsCount.className = "results-count";
+      resultsCount.textContent = `${filteredProducts.length} product${
+        filteredProducts.length !== 1 ? "s" : ""
+      } found`;
+      productsContainer.insertBefore(
+        resultsCount,
+        productsContainer.firstChild
+      );
+    }
+  }
+}
+
 /* Filter and display products when category changes */
-categoryFilter.addEventListener("change", async (e) => {
-  const products = await loadProducts();
-  const selectedCategory = e.target.value;
+categoryFilter.addEventListener("change", filterAndDisplayProducts);
 
-  /* filter() creates a new array containing only products 
-     where the category matches what the user selected */
-  const filteredProducts = products.filter(
-    (product) => product.category === selectedCategory
-  );
+/* Filter and display products when search input changes */
+productSearch.addEventListener("input", (e) => {
+  // Show/hide clear button based on input
+  if (e.target.value.trim()) {
+    clearSearchBtn.classList.add("visible");
+  } else {
+    clearSearchBtn.classList.remove("visible");
+  }
 
-  displayProducts(filteredProducts);
+  // Filter products
+  filterAndDisplayProducts();
+});
+
+/* Clear search functionality */
+clearSearchBtn.addEventListener("click", () => {
+  productSearch.value = "";
+  clearSearchBtn.classList.remove("visible");
+  productSearch.focus();
+  filterAndDisplayProducts();
+});
+
+/* Handle Enter key in search field */
+productSearch.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    productSearch.value = "";
+    clearSearchBtn.classList.remove("visible");
+    filterAndDisplayProducts();
+  }
 });
 
 /* Add event listener for Clear All button */
