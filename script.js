@@ -8,6 +8,55 @@ const chatWindow = document.getElementById("chatWindow");
 /* Array to store selected products */
 let selectedProducts = [];
 
+/* Load selected products from localStorage on page load */
+function loadSelectedProducts() {
+  const savedProducts = localStorage.getItem('selectedProducts');
+  if (savedProducts) {
+    selectedProducts = JSON.parse(savedProducts);
+  }
+}
+
+/* Save selected products to localStorage */
+function saveSelectedProducts() {
+  localStorage.setItem('selectedProducts', JSON.stringify(selectedProducts));
+}
+
+/* Clear all selected products */
+function clearAllProducts() {
+  selectedProducts = [];
+  saveSelectedProducts();
+  updateSelectedProductsList();
+  updateProductCardStates();
+}
+
+/* Update the selected products list display */
+function updateSelectedProductsList() {
+  const selectedProductsList = document.getElementById("selectedProductsList");
+  const clearAllButton = document.getElementById("clearAllProducts");
+  
+  selectedProductsList.innerHTML = selectedProducts.length
+    ? selectedProducts
+        .map(
+          (product) => `
+          <div class="selected-product">
+            <h3>${product.name}</h3>
+            <p>${product.brand}</p>
+            <button onclick="removeProductFromList('${product.id}')">Remove</button>
+          </div>
+        `
+        )
+        .join("")
+    : "<p>No products selected</p>";
+
+  // Enable/disable the Clear All button based on whether products are selected
+  if (clearAllButton) {
+    clearAllButton.disabled = selectedProducts.length === 0;
+  }
+}
+
+/* Load selected products when page loads */
+loadSelectedProducts();
+
 /* Show initial placeholder until user selects a category */
 productsContainer.innerHTML = `
   <div class="placeholder-message">
@@ -98,22 +147,9 @@ function toggleProductSelection(productId) {
     }
   }
 
-  // Update the selected products list in the DOM
-  const selectedProductsList = document.getElementById("selectedProductsList");
-  selectedProductsList.innerHTML = products.length
-    ? products
-        .map(
-          (product) => `
-          <div class="selected-product">
-            <h3>${product.name}</h3>
-            <p>${product.brand}</p>
-            <button onclick="removeProductFromList('${product.id}')">Remove</button>
-          </div>
-        `
-        )
-        .join("")
-    : "<p>No products selected</p>";
-
+  // Save to localStorage and update the display
+  saveSelectedProducts();
+  updateSelectedProductsList();
   updateProductCardStates();
 }
 
@@ -126,24 +162,9 @@ function removeProductFromList(productId) {
   if (productIndex > -1) {
     selectedProducts.splice(productIndex, 1);
 
-    // Update the selected products list in the DOM
-    const selectedProductsList = document.getElementById(
-      "selectedProductsList"
-    );
-    selectedProductsList.innerHTML = selectedProducts.length
-      ? selectedProducts
-          .map(
-            (product) => `
-            <div class="selected-product">
-              <h3>${product.name}</h3>
-              <p>${product.brand}</p>
-              <button onclick="removeProductFromList('${product.id}')">Remove</button>
-            </div>
-          `
-          )
-          .join("")
-      : "<p>No products selected</p>";
-
+    // Save to localStorage and update the display
+    saveSelectedProducts();
+    updateSelectedProductsList();
     updateProductCardStates();
   }
 }
@@ -160,6 +181,15 @@ categoryFilter.addEventListener("change", async (e) => {
   );
 
   displayProducts(filteredProducts);
+});
+
+/* Add event listener for Clear All button */
+const clearAllButton = document.getElementById("clearAllProducts");
+clearAllButton.addEventListener("click", clearAllProducts);
+
+/* Initialize the selected products display when page loads */
+document.addEventListener("DOMContentLoaded", () => {
+  updateSelectedProductsList();
 });
 
 /* Chat form submission handler - placeholder for OpenAI integration */

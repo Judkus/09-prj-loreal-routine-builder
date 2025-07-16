@@ -335,6 +335,33 @@ body {
   gap: 10px;
 }
 
+.products-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.clear-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  flex: 1;
+}
+
+.clear-btn:hover {
+  background-color: #c82333;
+}
+
+.clear-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
 .generate-btn {
   background-color: var(--loreal-red);
   color: white;
@@ -344,15 +371,15 @@ body {
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s;
-  width: 100%;
-  margin-top: 20px;
+  flex: 2;
 }
 
 .generate-btn:hover {
   background-color: var(--loreal-gold);
 }
 
-.generate-btn i {
+.generate-btn i,
+.clear-btn i {
   margin-right: 8px;
 }
 
