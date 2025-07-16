@@ -10,7 +10,7 @@ let selectedProducts = [];
 
 /* Load selected products from localStorage on page load */
 function loadSelectedProducts() {
-  const savedProducts = localStorage.getItem('selectedProducts');
+  const savedProducts = localStorage.getItem("selectedProducts");
   if (savedProducts) {
     selectedProducts = JSON.parse(savedProducts);
   }
@@ -18,7 +18,7 @@ function loadSelectedProducts() {
 
 /* Save selected products to localStorage */
 function saveSelectedProducts() {
-  localStorage.setItem('selectedProducts', JSON.stringify(selectedProducts));
+  localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
 }
 
 /* Clear all selected products */
@@ -33,7 +33,7 @@ function clearAllProducts() {
 function updateSelectedProductsList() {
   const selectedProductsList = document.getElementById("selectedProductsList");
   const clearAllButton = document.getElementById("clearAllProducts");
-  
+
   selectedProductsList.innerHTML = selectedProducts.length
     ? selectedProducts
         .map(
@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateSelectedProductsList();
 });
 
-/* Chat form submission handler - placeholder for OpenAI integration */
+/* Chat form submission handler - Enhanced with web search capabilities */
 // Handle chat form submission for follow-up questions
 chatForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -203,8 +203,8 @@ chatForm.addEventListener("submit", async (e) => {
   chatWindow.innerHTML += `<div class="user-message"><strong>You:</strong> ${userInput}</div>`;
   document.getElementById("userInput").value = "";
 
-  // Call the OpenAI API for a follow-up answer
-  chatWindow.innerHTML += `<div class="assistant-message">Thinking...</div>`;
+  // Call the enhanced API for real-time web search
+  chatWindow.innerHTML += `<div class="assistant-message">Searching for current information...</div>`;
   try {
     const response = await fetch(
       "https://lorealproject9.kussuejh.workers.dev/",
@@ -212,22 +212,21 @@ chatForm.addEventListener("submit", async (e) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "gpt-4o",
           messages: [
             {
-              role: "system",
-              content:
-                "You are a helpful L'Oréal beauty advisor. Answer follow-up questions about routines and products.",
+              role: "user",
+              content: `As a L'Oréal beauty advisor, please search for current information about: ${userInput}. Focus on L'Oréal products, recent launches, current trends, and provide citations when available.`,
             },
-            { role: "user", content: userInput },
           ],
-          max_tokens: 100,
         }),
       }
     );
     const data = await response.json();
     let answer = "";
-    if (
+
+    if (data.error) {
+      answer = data.error;
+    } else if (
       data.choices &&
       data.choices[0].message &&
       data.choices[0].message.content
@@ -235,19 +234,44 @@ chatForm.addEventListener("submit", async (e) => {
       answer = data.choices[0].message.content;
     } else if (data.choices && data.choices[0].text) {
       answer = data.choices[0].text;
+    } else {
+      answer =
+        "I couldn't find current information about that topic. Please try rephrasing your question.";
     }
-    // Remove the 'Thinking...' message
+
+    // Remove the 'Searching...' message
     chatWindow.innerHTML = chatWindow.innerHTML.replace(
-      /<div class=\"assistant-message\">Thinking\.\.\.<\/div>/,
+      /<div class=\"assistant-message\">Searching for current information\.\.\.<\/div>/,
       ""
     );
-    chatWindow.innerHTML += `<div class="assistant-message"><strong>Advisor:</strong> ${answer}</div>`;
+
+    // Format the response with proper markdown rendering for links
+    const formattedAnswer = formatResponseWithLinks(answer);
+    chatWindow.innerHTML += `<div class="assistant-message"><strong>Advisor:</strong> ${formattedAnswer}</div>`;
+
+    // Scroll to bottom to show new message
+    chatWindow.scrollTop = chatWindow.scrollHeight;
   } catch (error) {
-    chatWindow.innerHTML += `<div class="assistant-message error">Sorry, I couldn't get a response. Please try again.</div>`;
+    console.error("Chat error:", error);
+    chatWindow.innerHTML = chatWindow.innerHTML.replace(
+      /<div class=\"assistant-message\">Searching for current information\.\.\.<\/div>/,
+      ""
+    );
+    chatWindow.innerHTML += `<div class="assistant-message error">Sorry, I couldn't get current information right now. Please try again.</div>`;
   }
 });
 
-/* Generate a personalized routine using OpenAI API */
+/* Helper function to format responses with clickable links */
+function formatResponseWithLinks(text) {
+  // Convert markdown links [text](url) to HTML links
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  return text.replace(
+    linkRegex,
+    '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+  );
+}
+
+/* Generate a personalized routine using enhanced web search API */
 const generateRoutineButton = document.getElementById("generateRoutine");
 
 generateRoutineButton.addEventListener("click", async () => {
@@ -262,13 +286,26 @@ generateRoutineButton.addEventListener("click", async () => {
     const formattedProducts = selectedProducts
       .map(
         (product, index) =>
-          `Step ${index + 1}: ${product.name} (${product.brand}) - ${
-            product.description
-          }`
+          `${product.name} (${product.brand}) - ${product.description}`
       )
-      .join("\n");
+      .join(", ");
 
     console.log("Formatted Products:", formattedProducts); // Debugging log
+
+    // Show loading message
+    let oldRoutine = document.getElementById("routineMessage");
+    if (oldRoutine) {
+      oldRoutine.remove();
+    }
+
+    const loadingDiv = document.createElement("div");
+    loadingDiv.className = "routine";
+    loadingDiv.id = "routineMessage";
+    loadingDiv.innerHTML = `
+      <h3>Creating Your Personalized Routine</h3>
+      <p>Searching for current information and best practices...</p>
+    `;
+    chatWindow.appendChild(loadingDiv);
 
     const response = await fetch(
       "https://lorealproject9.kussuejh.workers.dev/",
@@ -278,34 +315,18 @@ generateRoutineButton.addEventListener("click", async () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gpt-4o", // Use the gpt-4o model
           messages: [
             {
-              role: "system",
-              content:
-                "You are a helpful L'Oréal beauty advisor. Create personalized routines based on selected products. Be specific about the order of use and explain why each product is beneficial.",
-            },
-            {
-              role: "user", // The user's message
-              content: `Generate a skincare routine using the following products:\n${formattedProducts}`,
+              role: "user",
+              content: `As a L'Oréal beauty advisor, create a detailed personalized routine using these specific products: ${formattedProducts}. 
+              Please search for current information about these products, proper application order, layering techniques, and any recent updates about these items. 
+              Include specific steps, timing, and explain why each product is beneficial in this order. 
+              If available, include any current tips or techniques from beauty professionals.`,
             },
           ],
-          max_tokens: 150, // Limit the response length
         }),
       }
     );
-
-    // const response = await fetch(workerUrl, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     model: "gpt-4o",
-    //     prompt: `Generate a skincare routine using the following products:\n${formattedProducts}`,
-    //     max_tokens: 150,
-    //   }),
-    // });
 
     console.log("API Response:", response); // Debugging log
 
@@ -313,9 +334,11 @@ generateRoutineButton.addEventListener("click", async () => {
 
     console.log("Parsed Response Data:", data); // Debugging log
 
-    // Get the routine text from either data.choices[0].messages.content or data.choices[0].text
+    // Get the routine text from the response
     let routineText = "";
-    if (
+    if (data.error) {
+      routineText = `Error: ${data.error}`;
+    } else if (
       data.choices &&
       data.choices.length > 0 &&
       data.choices[0].message &&
@@ -330,18 +353,23 @@ generateRoutineButton.addEventListener("click", async () => {
       routineText = data.choices[0].text;
     }
 
-    // Show the routine inside the chatWindow
-    let oldRoutine = document.getElementById("routineMessage");
-    if (oldRoutine) {
-      oldRoutine.remove();
+    // Remove loading message
+    if (document.getElementById("routineMessage")) {
+      document.getElementById("routineMessage").remove();
     }
+
+    // Show the routine inside the chatWindow
     if (routineText) {
       const routineDiv = document.createElement("div");
       routineDiv.className = "routine";
       routineDiv.id = "routineMessage";
+
+      // Format the response with proper links
+      const formattedRoutine = formatResponseWithLinks(routineText.trim());
+
       routineDiv.innerHTML = `
         <h3>Your Personalized Routine</h3>
-        <pre>${routineText.trim()}</pre>
+        <div class="routine-content">${formattedRoutine}</div>
         <hr style='margin:1em 0;'>
       `;
       chatWindow.appendChild(routineDiv);
@@ -358,5 +386,17 @@ generateRoutineButton.addEventListener("click", async () => {
   } catch (error) {
     console.log("Failed to generate routine. Please try again later.");
     console.error("Error Details:", error); // Debugging log
+
+    // Remove loading message and show error
+    if (document.getElementById("routineMessage")) {
+      document.getElementById("routineMessage").remove();
+    }
+
+    const errorDiv = document.createElement("div");
+    errorDiv.className = "routine error";
+    errorDiv.id = "routineMessage";
+    errorDiv.textContent =
+      "Failed to generate routine. Please try again later.";
+    chatWindow.appendChild(errorDiv);
   }
 });

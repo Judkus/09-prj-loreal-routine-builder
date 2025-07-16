@@ -140,6 +140,40 @@ body {
   margin: 0;
 }
 
+.chat-window .routine .routine-content {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-size: inherit;
+  line-height: 1.6;
+}
+
+.chat-window .routine .routine-content a {
+  color: var(--loreal-red);
+  text-decoration: none;
+  border-bottom: 1px solid var(--loreal-red);
+  transition: all 0.3s ease;
+}
+
+.chat-window .routine .routine-content a:hover {
+  color: var(--loreal-gold);
+  border-bottom-color: var(--loreal-gold);
+  background-color: rgba(227, 165, 53, 0.1);
+}
+
+.chat-window .assistant-message a {
+  color: var(--loreal-red);
+  text-decoration: none;
+  border-bottom: 1px solid var(--loreal-red);
+  transition: all 0.3s ease;
+}
+
+.chat-window .assistant-message a:hover {
+  color: var(--loreal-gold);
+  border-bottom-color: var(--loreal-gold);
+  background-color: rgba(227, 165, 53, 0.1);
+}
+
 .chat-window .error {
   background-color: #ffebee;
   border-left: 4px solid #f44336;
